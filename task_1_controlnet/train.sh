@@ -1,7 +1,9 @@
 export MODEL_DIR="runwayml/stable-diffusion-v1-5"
-export OUTPUT_DIR="./runs/controlnet_fill50k"   # output directory of each run
+export OUTPUT_DIR="./runs/controlnet_fill50k_v2"   # output directory of each run
 
-accelerate launch train.py \
+export CUDA_VISIBLE_DEVICES="4,5,6,7"
+
+accelerate launch --main_process_port=29503 train.py \
 --seed=0 \
 --pretrained_model_name_or_path=$MODEL_DIR \
 --output_dir=$OUTPUT_DIR \
@@ -17,4 +19,5 @@ accelerate launch train.py \
 --use_8bit_adam \
 --checkpoints_total_limit 2 \
 --validation_steps 100 \
---report_to "tensorboard"
+--report_to "tensorboard" \
+--num_train_epochs 4

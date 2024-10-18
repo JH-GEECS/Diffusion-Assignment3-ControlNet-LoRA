@@ -2,7 +2,9 @@ export MODEL_NAME="CompVis/stable-diffusion-v1-4"
 export INSTANCE_DIR="./sample_data/dreambooth-cat"
 export OUTPUT_DIR="./runs/dreambooth_cat"
 
-accelerate launch --mixed_precision="no" train_dreambooth_lora.py \
+export CUDA_VISIBLE_DEVICES="2,3"
+
+accelerate launch --mixed_precision="no" --main_process_port=29501 train_dreambooth_lora.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --instance_data_dir=$INSTANCE_DIR \
   --output_dir=$OUTPUT_DIR \
@@ -18,4 +20,5 @@ accelerate launch --mixed_precision="no" train_dreambooth_lora.py \
   --validation_prompt="A photo of sks cat in a bucket" \
   --validation_epochs=50 \
   --checkpoints_total_limit 2 \
-  --seed="0"
+  --seed="0" \
+  

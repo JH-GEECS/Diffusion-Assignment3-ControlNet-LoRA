@@ -55,11 +55,16 @@ def zero_convolution(
     Return a 'zero-convolution layer'
     (Initialized weight & bias as zeros.)
     """
-    ######## TODO (1) ########
+    ######## TODO (1): Written ########
     # DO NOT change the code outside this part.
     # Return a zero-convolution layer,
     # with the weight & bias initialized as zeros.
-    module = None
+    module = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding)
+    
+    # Initialize weight & bias as zeros
+    nn.init.zeros_(module.weight)
+    nn.init.zeros_(module.bias)
+
     ######## TODO (1) ########
 
     return module
@@ -455,10 +460,16 @@ class ControlNetModel(ModelMixin, ConfigMixin, FromOriginalModelMixin):
             conditioning_channels=conditioning_channels,
         )
 
-        ######## TODO (2) ########
+        ######## TODO (2): written ########
         # DO NOT change the code outside this part.
         # Initialize 'controlnet' using the pretrained 'unet' model
         # NOTE: Modules to initialize: 'conv_in', 'time_proj', 'time_embedding', 'down_blocks', 'mid_block'
+        
+        controlnet.conv_in.load_state_dict(unet.conv_in.state_dict())
+        controlnet.time_proj.load_state_dict(unet.time_proj.state_dict())
+        controlnet.time_embedding.load_state_dict(unet.time_embedding.state_dict())
+        controlnet.down_blocks.load_state_dict(unet.down_blocks.state_dict())
+        controlnet.mid_block.load_state_dict(unet.mid_block.state_dict())
 
         ######## TODO (2) ########
 
@@ -745,8 +756,13 @@ class ControlNetModel(ModelMixin, ConfigMixin, FromOriginalModelMixin):
         # Apply zero-convolution to the residual features of each ControlNet block.
         # NOTE: Each 'controlnet_block' is used here.
 
-        down_block_res_samples = None
-        mid_block_res_sample = None
+        # import ipdb; ipdb.set_trace()
+        down_block_res_samples = list(down_block_res_samples)
+        for idx, (res_sample, each_control_conv) in enumerate(zip(down_block_res_samples, self.controlnet_down_blocks)):
+            down_block_res_samples[idx] = each_control_conv(res_sample)
+
+        mid_block_res_sample = self.controlnet_mid_block(sample)
+        
 
         ######## TODO (3) ########
 

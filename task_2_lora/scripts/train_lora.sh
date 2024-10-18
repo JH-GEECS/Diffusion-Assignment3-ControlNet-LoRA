@@ -2,6 +2,8 @@ export MODEL_NAME="CompVis/stable-diffusion-v1-4"
 export DATASET_NAME="lambdalabs/naruto-blip-captions"
 export OUTPUT_DIR="./runs/sd-naruto-model-lora"
 
+export CUDA_VISIBLE_DEVICES="4,5,6,7"
+
 accelerate launch --mixed_precision="no" train_lora.py \
   --pretrained_model_name_or_path=$MODEL_NAME \
   --output_dir=$OUTPUT_DIR \
@@ -19,4 +21,6 @@ accelerate launch --mixed_precision="no" train_lora.py \
   --seed=42 \
   --checkpoints_total_limit 2 \
   --validation_prompt="a cute bear"
-  
+
+# from datasets import load_dataset
+# ds = load_dataset("AIARTCHAN/lora-kimhongdo")
